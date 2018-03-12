@@ -1,10 +1,10 @@
 {
     "BabylonJS": {
         "divID": "babylonjs",
-        "rootURL": "./engines/babylonjs"
+        "rootURL": "./engines/babylonjs/?asset={asset}&camera-position={camera-position}"
     },
     "ThreeJS": {
         "divID": "threejs",
-        "rootURL": "./engines/threejs"
+        "rootURL": "./engines/threejs/?asset={asset}&camera-position={camera-position}"
     }
 }

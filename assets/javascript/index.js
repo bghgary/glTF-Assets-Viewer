@@ -97,21 +97,24 @@ function onModelDropDownChange() {
     let folderName = _manifestData[folderIndex].folder;
     let modelIndex = document.getElementById("modelDropDownMenu").value;
     let model = _manifestData[folderIndex].models[modelIndex].fileName;
-    updateEngineURLParameters(_rootdir + '/' + folderName, folderIndex, modelIndex);
+    updateEngineURLParameters(_rootdir, folderIndex, modelIndex);
 }
 
 /**
  * Updates the parameter arguments of the rendering engines.
  * @param {*} rootURL - base url of the glTF assets.
- * @param {*} folder - index of the folder, based on the manifest file.
+ * @param {*} folderIndex - index of the folder, based on the manifest file.
  * @param {*} modelIndex - index of the model, based on the manifest file.
  */
-function updateEngineURLParameters(rootURL, folder, modelIndex) {
+function updateEngineURLParameters(rootURL, folderIndex, modelIndex) {
     for (let engine in _engineData) {
         let url = _engineData[engine].rootURL;
         let divID = _engineData[engine].divID;
-        let newURL = url + '/?manifest=' + _manifestURL + '&folder=' + folder + '&model=' + modelIndex;
-        document.getElementById(divID).src = newURL;
+        let assetURL = `${rootURL}/${_manifestData[folderIndex].folder}/${_manifestData[folderIndex].models[modelIndex].fileName}`
+        let cameraPosition = _manifestData[folderIndex].models[modelIndex].camera.translation;
+        let camPositionString = `[${cameraPosition[0]},${cameraPosition[1]},${cameraPosition[2]}]`;
+        let newRootURL = url.replace('{asset}', assetURL).replace('{camera-position}', camPositionString);
+        document.getElementById(divID).src = newRootURL;
     }
 }
 

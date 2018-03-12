@@ -1,3 +1,7 @@
+/** 
+ * Parse parameters from url
+ * @returns - parse parameters
+*/
 function parseParameters() {
     var result = {};
     var parameters = location.href.split("?")[1];
@@ -6,16 +10,12 @@ function parseParameters() {
         for (var i = 0; i < parameters.length; i++) {
             var parameter = parameters[i].split("=");
             switch (parameter[0]) {
-                case "manifest": {
-                    result.manifest = decodeURIComponent(parameter[1]);
+                case "asset": {
+                    result.assetURL = decodeURIComponent(parameter[1]);
                     break;
                 }
-                case "folder": {
-                    result.folder = parseInt(decodeURIComponent(parameter[1]));
-                    break;
-                }
-                case "model": {
-                    result.model = parseInt(decodeURIComponent(parameter[1]));
+                case "camera-position": {
+                    result.cameraPosition = JSON.parse(decodeURIComponent(parameter[1]));
                     break;
                 }
             }
@@ -49,43 +49,36 @@ function getManifest(manifestFile, onSuccess, onError) {
 
 function createScene(engine, onSuccess) {
     var parameters = parseParameters();
-    if (parameters.manifest && parameters.folder != null && parameters.model != null) {
-        getManifest(parameters.manifest, function (manifestData) {
-            let folderGroup = manifestData[parameters.folder];
-            let modelData = folderGroup.models[parameters.model];
-            let rootURL = parameters.manifest.substr(0, parameters.manifest.lastIndexOf('/')) + '/' + folderGroup.folder + '/';
 
-            let cameraPosition = BABYLON.Vector3.FromArray(modelData.camera.translation);
-            cameraPosition.z *= -1;
+    if (parameters.assetURL && parameters.cameraPosition) {
+        let assetURL = parameters.assetURL;
+        let rootURL = assetURL.substr(0, assetURL.lastIndexOf('/') + 1);
+        let asset = assetURL.substr(assetURL.lastIndexOf('/') + 1, assetURL.length);
+        let cameraPosition = BABYLON.Vector3.FromArray(parameters.cameraPosition);
+        cameraPosition.z *= -1;
 
-            BABYLON.SceneLoader.Load(rootURL, modelData.fileName, engine, function (scene) {
-                let camera = new BABYLON.ArcRotateCamera("arcRotateCamera", 0, 0, 1, BABYLON.Vector3.Zero(), scene);
-                camera.setPosition(cameraPosition);
-                scene.switchActiveCamera(camera);
+        BABYLON.SceneLoader.Load(rootURL, asset, engine, function (scene) {
+            let camera = new BABYLON.ArcRotateCamera("arcRotateCamera", 0, 0, 1, BABYLON.Vector3.Zero(), scene);
+            camera.setPosition(cameraPosition);
+            scene.switchActiveCamera(camera);
 
-                var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.dds", scene);
-                scene.createDefaultSkybox(hdrTexture, true, (scene.activeCamera.maxZ - scene.activeCamera.minZ) / 2, 0.0);
+            var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.dds", scene);
+            scene.createDefaultSkybox(hdrTexture, true, (scene.activeCamera.maxZ - scene.activeCamera.minZ) / 2, 0.0);
 
-                onSuccess(scene);
-            }, null, function (scene, message) {
-                alert(message);
-            });
-        }, function (err) {
-            alert(err);
+            onSuccess(scene);
+        }, null, function (scene, message) {
+            alert(message);
         });
     }
     else {
         if (!parameters) {
             console.error("BabylonJS: no parameters!!");
         }
-        if (!parameters.manifest) {
-            console.error("BabylonJS: no manifesrt!!");
+        if (!parameters.assetURL) {
+            console.error("BabylonJS: no asset URL!!");
         }
-        if (!parameters.folder) {
-            console.error("BabylonJS: no folder index!");
-        }
-        if (!parameters.model) {
-            console.error("BabylonJS: no model index!");
+        if (!parameters.cameraPosition) {
+            console.error("BabylonJS: no camera Position!!");
         }
     }
 }

@@ -5,19 +5,13 @@ function parseParameters() {
         parameters = parameters.split("&");
         for (var i = 0; i < parameters.length; i++) {
             var parameter = parameters[i].split("=");
-            console.log(parameter[0]);
             switch (parameter[0]) {
-                case "manifest": {
-                    result.manifest = decodeURIComponent(parameter[1]);
-                    console.log(result.manifest);
+                case "asset": {
+                    result.assetURL = decodeURIComponent(parameter[1]);
                     break;
                 }
-                case "folder": {
-                    result.folder = parseInt(decodeURIComponent(parameter[1]));
-                    break;
-                }
-                case "model": {
-                    result.model = parseInt(decodeURIComponent(parameter[1]));
+                case "camera-position": {
+                    result.cameraPosition = JSON.parse(decodeURIComponent(parameter[1]));
                     break;
                 }
             }
@@ -84,8 +78,6 @@ function loadTHREEScene(path, cameraPosition) {
     light1.position.set(0, 1, 0);
     scene.add(light1);
 
-
-
     let loader = new THREE.GLTFLoader();
 
     loader.load(path, (gltf) => {
@@ -113,7 +105,7 @@ function loadTHREEScene(path, cameraPosition) {
     window.addEventListener('resize', onWindowResize, false);
 
     function onWindowResize() {
-        camera.aspect = window.innerWidth/window.innerHeight;
+        camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
@@ -123,31 +115,18 @@ function loadTHREEScene(path, cameraPosition) {
 
 function createScene() {
     var parameters = parseParameters();
-    if (parameters.manifest && parameters.folder != null && parameters.model != null) {
-        getManifest(parameters.manifest, function (manifestData) {
-            let folderGroup = manifestData[parameters.folder];
-            let modelData = folderGroup.models[parameters.model];
-            let cameraPosition = modelData.camera.translation;
-            let rootURL = parameters.manifest.substr(0, parameters.manifest.lastIndexOf('/')) + '/' + folderGroup.folder + '/';
-            let path = rootURL + modelData.fileName;
-            loadTHREEScene(path, cameraPosition);
-        }, function (err) {
-            console.error(err);
-        });
+    if (parameters.assetURL && parameters.cameraPosition) {
+        loadTHREEScene(parameters.assetURL, parameters.cameraPosition);
     }
     else {
         if (!parameters) {
             console.error("ThreeJS: no parameters!!");
         }
-        if (!parameters.manifest) {
-            console.error("ThreeJS: no manifesrt!!");
+        if (!parameters.assetURL) {
+            console.error("ThreeJS: no asset URL!!");
         }
-        if (!parameters.folder) {
-            console.error("ThreeJS: no folder index!");
+        if (!parameters.cameraPosition) {
+            console.error("ThreeJS: no camera position!!");
         }
-        if (!parameters.model) {
-            console.error("ThreeJS: no model index!");
-        }
-
     }
 }
