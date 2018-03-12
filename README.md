@@ -2,9 +2,7 @@
 The [glTF Asset Generator](https://github.com/bghgary/glTF-Asset-Generator) README files uses this tool to view assets.
 
 # How to add your engine
-Your engine should be able to load a manifest file from glTF-Asset-Generator. (i.e. https://raw.githubusercontent.com/bghgary/glTF-Asset-Generator/master/Output/Manifest.json)
-
-The url parameters should understand these arguments, separated by ampersand (&):
+The url parameters for your engine loader should understand these arguments, separated by ampersand (&):
 - asset-url=(url to the gltf asset)
 - camera-position=(world-space position of the camera in right-handed coordinates)
 
