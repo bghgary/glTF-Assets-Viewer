@@ -1,0 +1,10 @@
+{
+    "BabylonJS": {
+        "divID": "babylonjs",
+        "rootURL": "./engines/babylonjs"
+    },
+    "ThreeJS": {
+        "divID": "threejs",
+        "rootURL": "./engines/threejs"
+    }
+}

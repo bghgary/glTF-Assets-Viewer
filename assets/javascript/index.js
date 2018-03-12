@@ -1,7 +1,29 @@
-let _manifestData;
-let _params;
-let _rootdir;
+/**
+ * URL of the manifest file.
+ */
 let _manifestURL;
+
+/**
+ * Data of the manifest file.
+ */
+let _manifestData;
+
+/**
+ * URL parameters.
+ */
+let _params;
+
+/**
+ * Root directory of the glTF assets relative to the manifest file.
+ */
+let _rootdir;
+
+const ENGINESURL = "assets/json/engines.json";
+
+/**
+ * Data of the rendering engines parsed from the engines json file.
+ */
+let _engineData;
 
 /** 
  * Parse parameters from url
@@ -20,12 +42,12 @@ function parseParameters() {
                     _rootdir = result.manifest.substr(0, result.manifest.lastIndexOf('/'));
                     break;
                 }
-                case "folderIndex": {
-                    result.folderIndex = decodeURIComponent(parameter[1]);
+                case "folder": {
+                    result.folder = decodeURIComponent(parameter[1]);
                     break;
                 }
-                case "modelIndex": {
-                    result.modelIndex = decodeURIComponent(parameter[1]);
+                case "model": {
+                    result.model = decodeURIComponent(parameter[1]);
                     break;
                 }
             }
@@ -35,31 +57,62 @@ function parseParameters() {
     return result;
 }
 
+/**
+ * Initializes the rendering engines from the json file.
+ */
+function initializeEngines() {
+    getJSON(ENGINESURL, populateEngines, null);
+}
+/**
+ * Populates the html with cards containing iframes to the different rendering engines.
+ */
+function populateEngines(engines) {
+    _engineData = engines;
+
+    let engineDiv = document.getElementById("rendering-engines");
+
+    for (let engine in engines) {
+        let engineName = engine;
+        let engineURL = engines[engine].rootURL;
+        let engineDivID = engines[engine].divID;
+
+        let engineHTML = `
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">${engineName}</h5>
+                <div class="embed-responsive embed-responsive-1by1">
+                    <iframe class="embed-responsive-item" id="${engineDivID}" src=${engineURL}></iframe>
+                </div>
+            </div>
+        </div>
+        `;
+        engineDiv.innerHTML += engineHTML;
+    }
+
+    loadParams();
+}
+
 function onModelDropDownChange() {
     let folderIndex = folderDropDown = document.getElementById("folderDropDownMenu").value;
     let folderName = _manifestData[folderIndex].folder;
     let modelIndex = document.getElementById("modelDropDownMenu").value;
     let model = _manifestData[folderIndex].models[modelIndex].fileName;
-    updateBabylonJSURL(_rootdir + '/' + folderName ,folderIndex, modelIndex);
-    updateThreeJSUrl(_rootdir + '/' + folderName, folderIndex, modelIndex);
+    updateEngineURLParameters(_rootdir + '/' + folderName, folderIndex, modelIndex);
 }
 
-function updateBabylonJSURL(rootURL, folderIndex, modelIndex) {
-    let url = './engines/babylonjs';
-    let babylonJSIframe = document.getElementById('babylonjs');
-    let newURL = url + '/?manifest=' + _manifestURL + '&folderIndex=' + folderIndex + '&modelIndex=' + modelIndex; 
-   // babylonJSIframe.src = url + '/?manifest=' + _manifestURL + '&folderIndex=' + folderIndex + '&modelIndex=' + modelIndex; 
-    //alert(newURL);
-    babylonJSIframe.src = newURL;
-}
-
-function updateThreeJSUrl(rootURL, folderIndex, modelIndex) {
-    let url = './engines/threejs';
-    let threeJSIframe = document.getElementById('threejs');
-    let newURL = url + '/?manifest=' + _manifestURL + '&folderIndex=' + folderIndex + '&modelIndex=' + modelIndex; 
-   // babylonJSIframe.src = url + '/?manifest=' + _manifestURL + '&folderIndex=' + folderIndex + '&modelIndex=' + modelIndex; 
-    //alert(newURL);
-    threeJSIframe.src = newURL;
+/**
+ * Updates the parameter arguments of the rendering engines.
+ * @param {*} rootURL - base url of the glTF assets.
+ * @param {*} folder - index of the folder, based on the manifest file.
+ * @param {*} modelIndex - index of the model, based on the manifest file.
+ */
+function updateEngineURLParameters(rootURL, folder, modelIndex) {
+    for (let engine in _engineData) {
+        let url = _engineData[engine].rootURL;
+        let divID = _engineData[engine].divID;
+        let newURL = url + '/?manifest=' + _manifestURL + '&folder=' + folder + '&model=' + modelIndex;
+        document.getElementById(divID).src = newURL;
+    }
 }
 
 /** 
@@ -69,9 +122,11 @@ function onFolderDropDownChanged() {
     let folderDropDown = document.getElementById("folderDropDownMenu");
     let models = _manifestData[folderDropDown.value].models;
     generateDropdownMenu("modelDropDown", "modelDropDownMenu", models, "fileName", onModelDropDownChange);
+    if (_params.model != null) {
+        document.getElementById("modelDropDownMenu").value = _params.model;
+        onModelDropDownChange();
+    }
 }
-
-
 
 /**
  * Creates a dropdown menu using the manifest data.
@@ -82,9 +137,9 @@ function onFolderDropDownChanged() {
  * @param {function()} onChange - callback to use when a drop down menu item has changed.
  */
 function generateDropdownMenu(targetID, dropDownID, data, property, onChange) {
-    let innerHTML = '<select id="' + dropDownID + '"';
+    let innerHTML = `<select id="${dropDownID}"`;
     if (onChange) {
-        innerHTML += 'onchange="' + onChange.name + '()">';
+        innerHTML += `onchange="${onChange.name}()">`;
     }
     else {
         innerHTML += '>';
@@ -92,7 +147,7 @@ function generateDropdownMenu(targetID, dropDownID, data, property, onChange) {
 
     innerHTML += '<option value="#">--------</option>';
     for (let i = 0; i < data.length; ++i) {
-        innerHTML += '<option value="' + i + '">' + data[i][property] + '</option>';
+        innerHTML += `<option value="${i}">${data[i][property]}</option>`;
     }
     innerHTML += '</select>'
 
@@ -107,6 +162,11 @@ function populateFolderDropdown(manifestData) {
     _manifestData = manifestData;
 
     generateDropdownMenu("folderDropDown", "folderDropDownMenu", _manifestData, 'folder', onFolderDropDownChanged);
+
+    if (_params.folder != null) {
+        document.getElementById('folderDropDownMenu').value = _params.folder;
+        onFolderDropDownChanged();
+    }
 }
 
 /** 
@@ -117,17 +177,18 @@ function loadParams() {
 
     if (_params.manifest) {
         _manifestURL = _params.manifest;
-        getManifest(_params.manifest, populateFolderDropdown);
+        getJSON(_params.manifest, populateFolderDropdown);
+
     }
 }
 
 /**
- * Fetches the manifest data from the url
- * @param {string} manifestFile - url of the manifest file
- * @param {function(object)} onSuccess - callback triggered on success with the manifest data as the argument.
+ * Fetches the json data from the url
+ * @param {string} jsonURL - url of the json file
+ * @param {function(object)} onSuccess - callback triggered on success with the json data as the argument.
  * @param {*} onError - callback triggered on failure.
  */
-function getManifest(manifestFile, onSuccess, onError) {
+function getJSON(jsonURL, onSuccess, onError) {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.timeout = 5000;
     xmlhttp.onreadystatechange = function () {
@@ -137,10 +198,11 @@ function getManifest(manifestFile, onSuccess, onError) {
         }
     };
     xmlhttp.ontimeout = function (err) {
-        onError("getManifest timed out");
+        onError("getJSON timed out");
     }
-    xmlhttp.open('GET', manifestFile, true);
+    xmlhttp.open('GET', jsonURL, true);
     xmlhttp.send();
 }
 
-loadParams();
+
+initializeEngines();

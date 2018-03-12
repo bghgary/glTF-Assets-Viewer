@@ -10,12 +10,12 @@ function parseParameters() {
                     result.manifest = decodeURIComponent(parameter[1]);
                     break;
                 }
-                case "folderIndex": {
-                    result.folderIndex = parseInt(decodeURIComponent(parameter[1]));
+                case "folder": {
+                    result.folder = parseInt(decodeURIComponent(parameter[1]));
                     break;
                 }
-                case "modelIndex": {
-                    result.modelIndex = parseInt(decodeURIComponent(parameter[1]));
+                case "model": {
+                    result.model = parseInt(decodeURIComponent(parameter[1]));
                     break;
                 }
             }
@@ -49,17 +49,19 @@ function getManifest(manifestFile, onSuccess, onError) {
 
 function createScene(engine, onSuccess) {
     var parameters = parseParameters();
-    if (parameters.manifest && parameters.folderIndex != null && parameters.modelIndex != null) {
+    if (parameters.manifest && parameters.folder != null && parameters.model != null) {
         getManifest(parameters.manifest, function (manifestData) {
-            let folderGroup = manifestData[parameters.folderIndex];
-            let modelData = folderGroup.models[parameters.modelIndex];
+            let folderGroup = manifestData[parameters.folder];
+            let modelData = folderGroup.models[parameters.model];
             let rootURL = parameters.manifest.substr(0, parameters.manifest.lastIndexOf('/')) + '/' + folderGroup.folder + '/';
-   //         let cameraTransformInfo = modelData.camera;
+
+            let cameraPosition = BABYLON.Vector3.FromArray(modelData.camera.translation);
+            cameraPosition.z *= -1;
 
             BABYLON.SceneLoader.Load(rootURL, modelData.fileName, engine, function (scene) {
-                scene.createDefaultCameraOrLight(true, true, true);
-           //     let camera = new FreeCamer
-                scene.activeCamera.alpha += Math.PI;
+                let camera = new BABYLON.ArcRotateCamera("arcRotateCamera", 0, 0, 1, BABYLON.Vector3.Zero(), scene);
+                camera.setPosition(cameraPosition);
+                scene.switchActiveCamera(camera);
 
                 var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.dds", scene);
                 scene.createDefaultSkybox(hdrTexture, true, (scene.activeCamera.maxZ - scene.activeCamera.minZ) / 2, 0.0);
@@ -68,8 +70,22 @@ function createScene(engine, onSuccess) {
             }, null, function (scene, message) {
                 alert(message);
             });
-        }, function(err) {
+        }, function (err) {
             alert(err);
         });
+    }
+    else {
+        if (!parameters) {
+            console.error("BabylonJS: no parameters!!");
+        }
+        if (!parameters.manifest) {
+            console.error("BabylonJS: no manifesrt!!");
+        }
+        if (!parameters.folder) {
+            console.error("BabylonJS: no folder index!");
+        }
+        if (!parameters.model) {
+            console.error("BabylonJS: no model index!");
+        }
     }
 }

@@ -12,13 +12,12 @@ function parseParameters() {
                     console.log(result.manifest);
                     break;
                 }
-                case "folderIndex": {
-                    result.folderIndex = parseInt(decodeURIComponent(parameter[1]));
-                    console.log(result.folderIndex);
+                case "folder": {
+                    result.folder = parseInt(decodeURIComponent(parameter[1]));
                     break;
                 }
-                case "modelIndex": {
-                    result.modelIndex = parseInt(decodeURIComponent(parameter[1]));
+                case "model": {
+                    result.model = parseInt(decodeURIComponent(parameter[1]));
                     break;
                 }
             }
@@ -50,38 +49,52 @@ function getManifest(manifestFile, onSuccess, onError) {
     xmlhttp.send();
 }
 
-function loadTHREEScene(path) {
+function loadTHREEScene(path, cameraPosition) {
     var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x555555);
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 2);
+    let ext = 'png';
+    let urls = [
+        'environment/pos-x.' + ext,
+        'environment/neg-x.' + ext,
+        'environment/pos-y.' + ext,
+        'environment/neg-y.' + ext,
+        'environment/pos-z.' + ext,
+        'environment/neg-z.' + ext
+    ];
+    let envMap = new THREE.CubeTextureLoader().load(urls);
+    scene.background = envMap;
+    let material = new THREE.MeshLambertMaterial({
+        color: 0xffffff,
+        envMap: scene.background
+    });
+
+    var camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.fromArray(cameraPosition);
+    camera.position.z *= -1;
+    let cameraControls = new THREE.OrbitControls(camera);
+
     camera.lookAt(new THREE.Vector3(0, 0, 0));
+    cameraControls.update();
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+
     let light1 = new THREE.HemisphereLight(0xbbbbff, 0x444422);
     light1.position.set(0, 1, 0);
     scene.add(light1);
 
-    let light2 = new THREE.DirectionalLight(0xffffff);
-    light2.position.set(0,0,1);
-    scene.add(light2);
 
-
-   // let light = new THREE.DirectionalLight(0xffffff);
-   // let light2 = new THREE.AmbientLight(0x555555, 0.75);
-  //  scene.add(light);
-    //scene.add(light2);
-    //light2.position.set(0, 0, 1);
 
     let loader = new THREE.GLTFLoader();
 
-    //  let path = 'https://raw.githubusercontent.com/bghgary/glTF-Asset-Generator/master/Output/Material_MetallicRoughness/Material_MetallicRoughness_06.gltf'
-
-    loader.load(path, (result) => {
-        scene.add.apply(scene, result.scene.children);
+    loader.load(path, (gltf) => {
+        gltf.scene.traverse(function (child) {
+            if (child.isMesh) {
+                child.material.envMap = envMap;
+            }
+        })
+        scene.add(gltf.scene);
 
         renderer.render(scene.camera);
     }, undefined, onError);
@@ -90,42 +103,50 @@ function loadTHREEScene(path) {
         console.error(e);
     }
 
-
     var animate = function () {
         requestAnimationFrame(animate);
+        cameraControls.update();
 
         renderer.render(scene, camera);
     }
 
-    animate();
+    window.addEventListener('resize', onWindowResize, false);
 
+    function onWindowResize() {
+        camera.aspect = window.innerWidth/window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    animate();
 }
 
 function createScene() {
     var parameters = parseParameters();
-    if (parameters.manifest && parameters.folderIndex != null && parameters.modelIndex != null) {
+    if (parameters.manifest && parameters.folder != null && parameters.model != null) {
         getManifest(parameters.manifest, function (manifestData) {
-            let folderGroup = manifestData[parameters.folderIndex];
-            let modelData = folderGroup.models[parameters.modelIndex];
+            let folderGroup = manifestData[parameters.folder];
+            let modelData = folderGroup.models[parameters.model];
+            let cameraPosition = modelData.camera.translation;
             let rootURL = parameters.manifest.substr(0, parameters.manifest.lastIndexOf('/')) + '/' + folderGroup.folder + '/';
             let path = rootURL + modelData.fileName;
-            loadTHREEScene(path);
+            loadTHREEScene(path, cameraPosition);
         }, function (err) {
             console.error(err);
         });
     }
     else {
         if (!parameters) {
-            console.error("no parameters!!");
+            console.error("ThreeJS: no parameters!!");
         }
         if (!parameters.manifest) {
-            console.error("no manifesrt!!");
+            console.error("ThreeJS: no manifesrt!!");
         }
-        if (!parameters.folderIndex) {
-            console.error("no folder index!");
+        if (!parameters.folder) {
+            console.error("ThreeJS: no folder index!");
         }
-        if (!parameters.modelIndex) {
-            console.error("no model index!");
+        if (!parameters.model) {
+            console.error("ThreeJS: no model index!");
         }
 
     }
