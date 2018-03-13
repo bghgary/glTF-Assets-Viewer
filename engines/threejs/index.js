@@ -6,16 +6,32 @@ function parseParameters() {
         for (var i = 0; i < parameters.length; i++) {
             var parameter = parameters[i].split("=");
             switch (parameter[0]) {
-                case "asset": {
-                    result.assetURL = decodeURIComponent(parameter[1]);
+                case "assetUrl": {
+                    result.assetURL = parameter[1];
                     break;
                 }
-                case "camera-position": {
-                    result.cameraPosition = JSON.parse(decodeURIComponent(parameter[1]));
+                case "cameraPosition": {
+                    result.cameraPosition = parseArray(parameter[1]);
                     break;
                 }
             }
         }
+    }
+
+    return result;
+}
+
+/**
+     * Parse a string into an array of numbers.
+     * @param {string} arr 
+     */
+function parseArray(arr) {
+    var result = [];
+    var entries = arr.substring(1, arr.length - 1).split(",");
+    var length = entries.length;
+
+    for (var i = 0; i < length; ++i) {
+        result.push(Number(entries[i]));
     }
 
     return result;
@@ -80,12 +96,12 @@ function loadTHREEScene(path, cameraPosition) {
 
     let loader = new THREE.GLTFLoader();
 
-    loader.load(path, (gltf) => {
+    loader.load(path, function (gltf) {
         gltf.scene.traverse(function (child) {
             if (child.isMesh) {
                 child.material.envMap = envMap;
             }
-        })
+        });
         scene.add(gltf.scene);
 
         renderer.render(scene.camera);

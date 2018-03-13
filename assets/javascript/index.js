@@ -38,16 +38,16 @@ function parseParameters() {
             var parameter = parameters[i].split("=");
             switch (parameter[0]) {
                 case "manifest": {
-                    result.manifest = decodeURIComponent(parameter[1]);
+                    result.manifest = parameter[1];
                     _rootdir = result.manifest.substr(0, result.manifest.lastIndexOf('/'));
                     break;
                 }
                 case "folder": {
-                    result.folder = decodeURIComponent(parameter[1]);
+                    result.folder = parameter[1];
                     break;
                 }
                 case "model": {
-                    result.model = decodeURIComponent(parameter[1]);
+                    result.model = parameter[1];
                     break;
                 }
             }
@@ -76,16 +76,19 @@ function populateEngines(engines) {
         let engineURL = engines[engine].rootURL;
         let engineDivID = engines[engine].divID;
 
-        let engineHTML = `
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">${engineName}</h5>
-                <div class="embed-responsive embed-responsive-1by1">
-                    <iframe class="embed-responsive-item" id="${engineDivID}" src=${engineURL}></iframe>
-                </div>
-            </div>
-        </div>
-        `;
+        let engineHTML = '\
+        <div class="card">\
+            <div class="card-body">\
+                <h5 class="card-title">'
+        engineHTML += engineName + '</h5>\
+                <div class="embed-responsive embed-responsive-1by1">\
+                    <iframe class="embed-responsive-item" id="';
+        engineHTML += engineDivID + '" src=';
+        engineHTML += engineURL + '></iframe>\
+                </div>\
+            </div>\
+        </div>\
+        ';
         engineDiv.innerHTML += engineHTML;
     }
 
@@ -110,10 +113,10 @@ function updateEngineURLParameters(rootURL, folderIndex, modelIndex) {
     for (let engine in _engineData) {
         let url = _engineData[engine].rootURL;
         let divID = _engineData[engine].divID;
-        let assetURL = `${rootURL}/${_manifestData[folderIndex].folder}/${_manifestData[folderIndex].models[modelIndex].fileName}`
+        let assetURL = rootURL + '/' + _manifestData[folderIndex].folder + '/' + _manifestData[folderIndex].models[modelIndex].fileName;
         let cameraPosition = _manifestData[folderIndex].models[modelIndex].camera.translation;
-        let camPositionString = `[${cameraPosition[0]},${cameraPosition[1]},${cameraPosition[2]}]`;
-        let newRootURL = url.replace('{asset}', assetURL).replace('{camera-position}', camPositionString);
+        let camPositionString = '[' + cameraPosition[0] + ',' + cameraPosition[1] + ',' + cameraPosition[2] + ']';
+        let newRootURL = url.replace('{assetUrl}', assetURL).replace('{cameraPosition}', camPositionString);
         document.getElementById(divID).src = newRootURL;
     }
 }
@@ -140,9 +143,9 @@ function onFolderDropDownChanged() {
  * @param {function()} onChange - callback to use when a drop down menu item has changed.
  */
 function generateDropdownMenu(targetID, dropDownID, data, property, onChange) {
-    let innerHTML = `<select id="${dropDownID}"`;
+    let innerHTML = '<select id="' + dropDownID + '"';
     if (onChange) {
-        innerHTML += `onchange="${onChange.name}()">`;
+        innerHTML += 'onchange="' + onChange.name + '()">';
     }
     else {
         innerHTML += '>';
@@ -150,7 +153,7 @@ function generateDropdownMenu(targetID, dropDownID, data, property, onChange) {
 
     innerHTML += '<option value="#">--------</option>';
     for (let i = 0; i < data.length; ++i) {
-        innerHTML += `<option value="${i}">${data[i][property]}</option>`;
+        innerHTML += '<option value="' + i + '">' + data[i][property] + '</option>';
     }
     innerHTML += '</select>'
 
@@ -193,7 +196,7 @@ function loadParams() {
  */
 function getJSON(jsonURL, onSuccess, onError) {
     let xmlhttp = new XMLHttpRequest();
-    xmlhttp.timeout = 5000;
+    
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             var manifestFile = JSON.parse(this.responseText);
@@ -204,6 +207,7 @@ function getJSON(jsonURL, onSuccess, onError) {
         onError("getJSON timed out");
     }
     xmlhttp.open('GET', jsonURL, true);
+    xmlhttp.timeout = 5000;
     xmlhttp.send();
 }
 
