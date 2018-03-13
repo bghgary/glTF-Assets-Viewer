@@ -100,7 +100,7 @@ function populateEngines(engines) {
  * Updates the url link based on parameters
 */
 function updateLink() {
-    let link = location.href.split('?')[0];
+    let link = location.href.split('?')[0] + '?';
     if (_params.manifest) {
         link += 'manifest=' + _params.manifest;
     }
