@@ -201,7 +201,7 @@ function loadParams() {
     _params = parseParameters();
 
     if (!_params.manifest && document.referrer) {
-        let manifestURL = document.referrer.endsWith('.md') ? document.referrer.split('Output')[0] + 'Output/' : document.referrer + '/';
+        let manifestURL = document.referrer.split('Output')[0] + 'Output/';
         manifestURL = manifestURL.replace('/github.com/', '/raw.githubusercontent.com/').replace('/tree/', '/').replace('/blob/', '/');
         _rootdir = manifestURL;
         manifestURL += 'Manifest.json';
