@@ -140,7 +140,7 @@ function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
         const iframeDiv = document.getElementById(cardID);
         iframeDiv.innerHTML = '<iframe class="embed-responsive-item" src=' + newURL + '></iframe>';
     }
-    _params.model=modelIndex;
+    _params.model = modelIndex;
     _params.folder = folderIndex;
     updateLink();
 }
