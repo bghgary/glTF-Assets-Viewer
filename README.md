@@ -3,7 +3,7 @@ The [glTF Asset Generator](https://github.com/bghgary/glTF-Asset-Generator) READ
 
 # How to add your engine
 Add your engine in [assets/json/engines.json](assets/json/engines.json)
-- Provide a URL to your engine with the url property containing template strings for asset {assetUrl} and camera position {cameraPosition}.
+- Provide a URL to your engine with the url property containing template strings for asset {assetUrl} and camera position {cameraPosition}.  The provided camera positions are **right-handed**.
 
 i.e.:
 ```
