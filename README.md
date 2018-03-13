@@ -2,14 +2,12 @@
 The [glTF Asset Generator](https://github.com/bghgary/glTF-Asset-Generator) README files uses this tool to view assets.
 
 # How to add your engine
-Add your engine in `assets/json/engines.json`
+Add your engine in [assets/json/engines.json](assets/json/engines.json)
 - Provide a URL to your engine with the url property containing template strings for asset {assetUrl} and camera position {cameraPosition}.
-- Add a unique divID for your engine.
 
 i.e.:
 ```
 "BabylonJS": {
-    "divID": "babylonjs",
     "rootURL": "http://url-to-babylonjs-engine/?assetUrl={assetUrl}&cameraPosition={cameraPosition}"
 }
 ```

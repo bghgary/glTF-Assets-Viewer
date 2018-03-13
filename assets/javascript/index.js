@@ -70,11 +70,12 @@ function populateEngines(engines) {
     _engineData = engines;
 
     let engineDiv = document.getElementById("rendering-engines");
-
-    for (let engine in engines) {
+    let index = 0;
+    for (let engine in _engineData) {
         let engineName = engine;
-        let engineURL = engines[engine].url;
-        let engineDivID = engines[engine].divID;
+        let engineURL = _engineData[engine].url;
+        const engineDivID = 'renderer_' + index++;
+        _engineData[engine].divID = engineDivID;
 
         let engineHTML = '\
         <div class="card">\
@@ -93,6 +94,24 @@ function populateEngines(engines) {
     }
 
     loadParams();
+}
+
+/** 
+ * Updates the url link based on parameters
+*/
+function updateLink() {
+    let link = location.href.split('?')[0];
+    if (_params.manifest) {
+        link += 'manifest=' + _params.manifest;
+    }
+    if (_params.folder) {
+        link += '&folder=' + _params.folder;
+    }
+    if (_params.model) {
+        link += '&model=' + _params.model;
+    }
+
+    window.history.replaceState(null, document.title, link);
 }
 
 function onModelDropDownChange() {
@@ -180,15 +199,16 @@ function populateFolderDropdown(manifestData) {
 */
 function loadParams() {
     _params = parseParameters();
-    
+
     if (!_params.manifest && document.referrer) {
         let manifestURL = document.referrer.endsWith('.md') ? document.referrer.substr(0, document.referrer.lastIndexOf('/')) : document.referrer + '/';
-        manifestURL = manifestURL.substr(0, manifestURL.lastIndexOf('/') + 1); 
+        manifestURL = manifestURL.substr(0, manifestURL.lastIndexOf('/') + 1);
         manifestURL = manifestURL.replace('/github.com/', '/raw.githubusercontent.com/').replace('/tree/', '/').replace('/blob/', '/');
         _rootdir = manifestURL;
         manifestURL += 'Manifest.json';
         _params.manifest = manifestURL;
-    } 
+        updateLink();
+    }
 
     if (_params.manifest) {
         _manifestURL = _params.manifest;
@@ -204,7 +224,7 @@ function loadParams() {
  */
 function getJSON(jsonURL, onSuccess, onError) {
     let xmlhttp = new XMLHttpRequest();
-    
+
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             let manifestFile = JSON.parse(this.responseText);
