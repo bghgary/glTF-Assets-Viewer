@@ -74,17 +74,18 @@ function populateEngines(engines) {
     for (let engine in _engineData) {
         let engineName = engine;
         let engineURL = _engineData[engine].url;
-        const engineDivID = 'renderer_' + index++;
-        _engineData[engine].divID = engineDivID;
+        const cardID = 'card_' + index++;
+
+        _engineData[engine].cardID = cardID;
 
         let engineHTML = '\
         <div class="card">\
             <div class="card-body">\
                 <h5 class="card-title">'
         engineHTML += engineName + '</h5>\
-                <div class="embed-responsive embed-responsive-1by1">\
-                    <iframe class="embed-responsive-item" id="';
-        engineHTML += engineDivID + '" src=';
+                <div id=';
+        engineHTML += cardID + ' class="embed-responsive embed-responsive-1by1">\
+                    <iframe class="embed-responsive-item" src=';
         engineHTML += engineURL + '></iframe>\
                 </div>\
             </div>\
@@ -131,12 +132,16 @@ function onModelDropDownChange() {
 function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
     for (let engine in _engineData) {
         let url = _engineData[engine].url;
-        let divID = _engineData[engine].divID;
+        let cardID = _engineData[engine].cardID;
         let assetURL = modelURL + '/' + _manifestData[folderIndex].folder + '/' + _manifestData[folderIndex].models[modelIndex].fileName;
         let cameraPosition = _manifestData[folderIndex].models[modelIndex].camera.translation;
         let camPositionString = '[' + cameraPosition[0] + ',' + cameraPosition[1] + ',' + cameraPosition[2] + ']';
         let newURL = url.replace('{assetUrl}', assetURL).replace('{cameraPosition}', camPositionString);
-        document.getElementById(divID).src = newURL;
+        const iframeDiv = document.getElementById(cardID);
+        iframeDiv.innerHTML = '<iframe class="embed-responsive-item" src=' + newURL + '></iframe>';
+     //   iframe.src = newURL;
+        // iframe.contentWindow.location.reload(true);
+
     }
 }
 

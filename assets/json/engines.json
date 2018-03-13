@@ -3,6 +3,6 @@
         "url": "./engines/babylonjs/?assetUrl={assetUrl}&cameraPosition={cameraPosition}"
     },
     "ThreeJS": {
-        "url": "./engines/threejs/?assetUrl={assetUrl}&cameraPosition={cameraPosition}"
+        "url": "https://gltf-viewer.donmccurdy.com/#model={assetUrl}"
     }
 }

@@ -2,13 +2,12 @@
 The [glTF Asset Generator](https://github.com/bghgary/glTF-Asset-Generator) README files uses this tool to view assets.
 
 # How to add your engine
-Add your engine in [assets/json/engines.json](assets/json/engines.json)
-- Provide a URL to your engine with the url property containing template strings for asset {assetUrl} and camera position {cameraPosition}.  The provided camera positions are **right-handed**.
+Add an entry to [assets/json/engines.json](assets/json/engines.json).  Provide a url to your engine with the `url` property containing template strings for asset `{assetUrl}` and camera position `{cameraPosition}`.  The provided camera position is in [glTF's coordinate system and units](https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#coordinate-system-and-units) and is a 3D vector containing the translation along the x, y and z axes without spaces (i.e. `[1,0,0]`).
 
-i.e.:
+
 ```
 "BabylonJS": {
-    "rootURL": "http://url-to-babylonjs-engine/?assetUrl={assetUrl}&cameraPosition={cameraPosition}"
+    "url": "http://url-to-babylonjs-engine/?assetUrl={assetUrl}&cameraPosition={cameraPosition}"
 }
 ```
 
