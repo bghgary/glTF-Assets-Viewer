@@ -1,0 +1,8 @@
+{
+    "BabylonJS": {
+        "url": "./engines/babylonjs/?assetUrl={assetUrl}&cameraPosition={cameraPosition}"
+    },
+    "ThreeJS": {
+        "url": "https://gltf-viewer.donmccurdy.com/#model={assetUrl}"
+    }
+}
