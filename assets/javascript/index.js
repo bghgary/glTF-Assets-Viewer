@@ -180,11 +180,15 @@ function populateFolderDropdown(manifestData) {
 */
 function loadParams() {
     _params = parseParameters();
+        alert(document.referrer);
+    
 
     if (!_params.manifest && document.referrer) {
+        alert("Test");
         let manifestURL = document.referrer.endsWith('.md') ? document.referrer.substr(0, document.referrer.lastIndexOf('/')) : document.referrer + '/';
         manifestURL = manifestURL.substr(0, manifestURL.lastIndexOf('/') + 1); 
         manifestURL = manifestURL.replace('/github.com/', '/raw.githubusercontent.com/').replace('/tree/', '/').replace('/blob/', '/');
+        _rootdir = manifestURL;
         manifestURL += 'Manifest.json';
         _params.manifest = manifestURL;
     } 
