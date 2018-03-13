@@ -11,7 +11,7 @@ function parseParameters() {
                     break;
                 }
                 case "cameraPosition": {
-                    result.cameraPosition = parseArray(parameter[1]);
+                    result.cameraPosition = parameter[1].match(/-?[0-9]+(\.[0-9]+)?/g);
                     break;
                 }
             }
@@ -19,44 +19,6 @@ function parseParameters() {
     }
 
     return result;
-}
-
-/**
-     * Parse a string into an array of numbers.
-     * @param {string} arr 
-     */
-function parseArray(arr) {
-    let result = [];
-    let entries = arr.substring(1, arr.length - 1).split(",");
-    let length = entries.length;
-
-    for (let i = 0; i < length; ++i) {
-        result.push(Number(entries[i]));
-    }
-
-    return result;
-}
-
-/**
- * Fetches the manifest data from the url
- * @param {string} manifestFile - url of the manifest file
- * @param {function(object)} onSuccess - callback triggered on success with the manifest data as the argument.
- * @param {*} onError - callback triggered on failure.
- */
-function getManifest(manifestFile, onSuccess, onError) {
-    let xmlhttp = new XMLHttpRequest();
-    xmlhttp.timeout = 5000;
-    xmlhttp.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            let manifestFile = JSON.parse(this.responseText);
-            onSuccess(manifestFile);
-        }
-    };
-    xmlhttp.ontimeout = function (err) {
-        onError("getManifest timed out");
-    }
-    xmlhttp.open('GET', manifestFile, true);
-    xmlhttp.send();
 }
 
 function loadTHREEScene(path, cameraPosition) {

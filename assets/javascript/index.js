@@ -73,7 +73,7 @@ function populateEngines(engines) {
 
     for (let engine in engines) {
         let engineName = engine;
-        let engineURL = engines[engine].rootURL;
+        let engineURL = engines[engine].url;
         let engineDivID = engines[engine].divID;
 
         let engineHTML = '\
@@ -105,19 +105,19 @@ function onModelDropDownChange() {
 
 /**
  * Updates the parameter arguments of the rendering engines.
- * @param {*} rootURL - base url of the glTF assets.
+ * @param {*} modelURL - base url of the glTF assets.
  * @param {*} folderIndex - index of the folder, based on the manifest file.
  * @param {*} modelIndex - index of the model, based on the manifest file.
  */
-function updateEngineURLParameters(rootURL, folderIndex, modelIndex) {
+function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
     for (let engine in _engineData) {
-        let url = _engineData[engine].rootURL;
+        let url = _engineData[engine].url;
         let divID = _engineData[engine].divID;
-        let assetURL = rootURL + '/' + _manifestData[folderIndex].folder + '/' + _manifestData[folderIndex].models[modelIndex].fileName;
+        let assetURL = modelURL + '/' + _manifestData[folderIndex].folder + '/' + _manifestData[folderIndex].models[modelIndex].fileName;
         let cameraPosition = _manifestData[folderIndex].models[modelIndex].camera.translation;
         let camPositionString = '[' + cameraPosition[0] + ',' + cameraPosition[1] + ',' + cameraPosition[2] + ']';
-        let newRootURL = url.replace('{assetUrl}', assetURL).replace('{cameraPosition}', camPositionString);
-        document.getElementById(divID).src = newRootURL;
+        let newURL = url.replace('{assetUrl}', assetURL).replace('{cameraPosition}', camPositionString);
+        document.getElementById(divID).src = newURL;
     }
 }
 
@@ -181,10 +181,17 @@ function populateFolderDropdown(manifestData) {
 function loadParams() {
     _params = parseParameters();
 
+    if (!_params.manifest && document.referrer) {
+        let manifestURL = document.referrer.endsWith('.md') ? document.referrer.substr(0, document.referrer.lastIndexOf('/')) : document.referrer + '/';
+        manifestURL = manifestURL.substr(0, manifestURL.lastIndexOf('/') + 1); 
+        manifestURL = manifestURL.replace('/github.com/', '/raw.githubusercontent.com/').replace('/tree/', '/').replace('/blob/', '/');
+        manifestURL += 'Manifest.json';
+        _params.manifest = manifestURL;
+    } 
+
     if (_params.manifest) {
         _manifestURL = _params.manifest;
         getJSON(_params.manifest, populateFolderDropdown);
-
     }
 }
 
