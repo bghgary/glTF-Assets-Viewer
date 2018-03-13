@@ -139,9 +139,6 @@ function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
         let newURL = url.replace('{assetUrl}', assetURL).replace('{cameraPosition}', camPositionString);
         const iframeDiv = document.getElementById(cardID);
         iframeDiv.innerHTML = '<iframe class="embed-responsive-item" src=' + newURL + '></iframe>';
-     //   iframe.src = newURL;
-        // iframe.contentWindow.location.reload(true);
-
     }
 }
 
