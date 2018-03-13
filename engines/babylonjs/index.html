@@ -29,8 +29,8 @@
 <body>
     <canvas id="renderCanvas"></canvas>
     <script>
-        var canvas = document.getElementById("renderCanvas");
-        var engine = new BABYLON.Engine(canvas);
+        let canvas = document.getElementById("renderCanvas");
+        let engine = new BABYLON.Engine(canvas);
         engine.enableOfflineSupport = false;
 
         window.addEventListener("resize", function () {

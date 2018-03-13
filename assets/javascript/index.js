@@ -30,12 +30,12 @@ let _engineData;
  * @returns - parse parameters
 */
 function parseParameters() {
-    var result = {};
-    var parameters = location.href.split("?")[1];
+    let result = {};
+    let parameters = location.href.split("?")[1];
     if (parameters) {
         parameters = parameters.split("&");
-        for (var i = 0; i < parameters.length; i++) {
-            var parameter = parameters[i].split("=");
+        for (let i = 0; i < parameters.length; i++) {
+            let parameter = parameters[i].split("=");
             switch (parameter[0]) {
                 case "manifest": {
                     result.manifest = parameter[1];
@@ -199,7 +199,7 @@ function getJSON(jsonURL, onSuccess, onError) {
     
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-            var manifestFile = JSON.parse(this.responseText);
+            let manifestFile = JSON.parse(this.responseText);
             onSuccess(manifestFile);
         }
     };

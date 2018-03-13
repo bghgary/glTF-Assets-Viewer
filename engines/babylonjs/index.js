@@ -3,12 +3,12 @@
  * @returns - parse parameters
 */
 function parseParameters() {
-    var result = {};
-    var parameters = location.href.split("?")[1];
+    let result = {};
+    let parameters = location.href.split("?")[1];
     if (parameters) {
         parameters = parameters.split("&");
-        for (var i = 0; i < parameters.length; i++) {
-            var parameter = parameters[i].split("=");
+        for (let i = 0; i < parameters.length; i++) {
+            let parameter = parameters[i].split("=");
             switch (parameter[0]) {
                 case "assetUrl": {
                     result.assetURL = parameter[1];
@@ -30,11 +30,11 @@ function parseParameters() {
      * @param {string} arr 
      */
 function parseArray(arr) {
-    var result = [];
-    var entries = arr.substring(1, arr.length - 1).split(",");
-    var length = entries.length;
+    let result = [];
+    let entries = arr.substring(1, arr.length - 1).split(",");
+    let length = entries.length;
 
-    for (var i = 0; i < length; ++i) {
+    for (let i = 0; i < length; ++i) {
         result.push(Number(entries[i]));
     }
 
@@ -52,7 +52,7 @@ function getManifest(manifestFile, onSuccess, onError) {
     xmlhttp.timeout = 5000;
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-            var manifestFile = JSON.parse(this.responseText);
+            let manifestFile = JSON.parse(this.responseText);
             onSuccess(manifestFile);
         }
     };
@@ -64,7 +64,7 @@ function getManifest(manifestFile, onSuccess, onError) {
 }
 
 function createScene(engine, onSuccess) {
-    var parameters = parseParameters();
+    let parameters = parseParameters();
 
     if (parameters.assetURL && parameters.cameraPosition) {
         let assetURL = parameters.assetURL;
@@ -78,7 +78,7 @@ function createScene(engine, onSuccess) {
             camera.setPosition(cameraPosition);
             scene.switchActiveCamera(camera);
 
-            var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.dds", scene);
+            let hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.dds", scene);
             scene.createDefaultSkybox(hdrTexture, true, (scene.activeCamera.maxZ - scene.activeCamera.minZ) / 2, 0.0);
 
             onSuccess(scene);

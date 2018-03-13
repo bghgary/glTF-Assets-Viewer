@@ -1,10 +1,10 @@
 function parseParameters() {
-    var result = {};
-    var parameters = location.href.split("?")[1];
+    let result = {};
+    let parameters = location.href.split("?")[1];
     if (parameters) {
         parameters = parameters.split("&");
-        for (var i = 0; i < parameters.length; i++) {
-            var parameter = parameters[i].split("=");
+        for (let i = 0; i < parameters.length; i++) {
+            let parameter = parameters[i].split("=");
             switch (parameter[0]) {
                 case "assetUrl": {
                     result.assetURL = parameter[1];
@@ -26,11 +26,11 @@ function parseParameters() {
      * @param {string} arr 
      */
 function parseArray(arr) {
-    var result = [];
-    var entries = arr.substring(1, arr.length - 1).split(",");
-    var length = entries.length;
+    let result = [];
+    let entries = arr.substring(1, arr.length - 1).split(",");
+    let length = entries.length;
 
-    for (var i = 0; i < length; ++i) {
+    for (let i = 0; i < length; ++i) {
         result.push(Number(entries[i]));
     }
 
@@ -48,7 +48,7 @@ function getManifest(manifestFile, onSuccess, onError) {
     xmlhttp.timeout = 5000;
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
-            var manifestFile = JSON.parse(this.responseText);
+            let manifestFile = JSON.parse(this.responseText);
             onSuccess(manifestFile);
         }
     };
@@ -60,7 +60,7 @@ function getManifest(manifestFile, onSuccess, onError) {
 }
 
 function loadTHREEScene(path, cameraPosition) {
-    var scene = new THREE.Scene();
+    let scene = new THREE.Scene();
     let ext = 'png';
     let urls = [
         'environment/pos-x.' + ext,
@@ -77,7 +77,7 @@ function loadTHREEScene(path, cameraPosition) {
         envMap: scene.background
     });
 
-    var camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
+    let camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.fromArray(cameraPosition);
     camera.position.z *= -1;
     let cameraControls = new THREE.OrbitControls(camera);
@@ -85,7 +85,7 @@ function loadTHREEScene(path, cameraPosition) {
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     cameraControls.update();
 
-    var renderer = new THREE.WebGLRenderer();
+    let renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -111,7 +111,7 @@ function loadTHREEScene(path, cameraPosition) {
         console.error(e);
     }
 
-    var animate = function () {
+    let animate = function () {
         requestAnimationFrame(animate);
         cameraControls.update();
 
@@ -130,7 +130,7 @@ function loadTHREEScene(path, cameraPosition) {
 }
 
 function createScene() {
-    var parameters = parseParameters();
+    let parameters = parseParameters();
     if (parameters.assetURL && parameters.cameraPosition) {
         loadTHREEScene(parameters.assetURL, parameters.cameraPosition);
     }
