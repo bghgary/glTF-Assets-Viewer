@@ -1,8 +1,8 @@
 {
     "BabylonJS": {
-        "templateUrl": "https://sandbox.babylonjs.com/index.html?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${-cameraPosition.z}&kiosk=true"
+        "templateUrl": "https://sandbox.babylonjs.com/index.html?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${cameraPosition.z}&kiosk=true"
     },
     "ThreeJS": {
-        "templateUrl": "https://gltf-viewer.donmccurdy.com/#model=${assetUrl}&cameraPosition=${cameraPosition.x},${cameraPosition.y},${-cameraPosition.z}&kiosk=true"
+        "templateUrl": "https://gltf-viewer.donmccurdy.com/#model=${assetUrl}&cameraPosition=${cameraPosition.x},${cameraPosition.y},${cameraPosition.z}&kiosk=true"
     }
 }
