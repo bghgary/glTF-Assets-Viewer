@@ -14,20 +14,19 @@
 </head>
 
 <body>
-    <h1>glTF Assets Viewer</h1>
-
-    <div class="container">
+    <div class="container-fluid">
+    <div class="form-group">
         <div class="row">
-            <div class="col-sm">
-                folder: <div id="folderDropDown">folder</div>
-            </div>
-            <div class="col-sm">
-                model: <div id="modelDropDown">model</div>
-            </div>
+            <div id="folderDropDown"></div>
+            <div id="modelDropDown"></div>
+        </div>
+        <div class="container-fluid"  id="assets-viewer-content">
         </div>
     </div>
+    </div>
 
-    <div id="rendering-engines" class="card-deck">
+    <div class="container-fluid">
+        <div id="rendering-engines" class="card-deck"></div>
     </div>
 
     <script src="index.js"></script>
