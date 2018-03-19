@@ -55,6 +55,15 @@ function parseParameters() {
     return result;
 }
 
+function manifestError() {
+    const referenceURL = 'https://bghgary.github.io/glTF-Assets-Viewer/?manifest=https://raw.githubusercontent.com/bghgary/glTF-Asset-Generator/master/Output/Manifest.json';
+    const innerHTML = '<div class="alert alert-danger" role="alert">\
+        The manifest url was not found! Here is a reference: <a href="' + referenceURL + '" class="alert-link">' + referenceURL + '</a>.\
+      </div>';
+
+    document.getElementById('assets-viewer-error-field').innerHTML = innerHTML;
+}
+
 /**
  * Initializes the rendering engines from the json file.
  */
@@ -79,7 +88,7 @@ function populateEngines(engines) {
         let engineHTML = '\
         <div class="card">\
             <div class="card-body">\
-                <h5 class="card-title">'
+                <h5 class="card-title">';
         engineHTML += engineName + '</h5>\
                 <div id=';
         engineHTML += cardID + ' class="embed-responsive embed-responsive-1by1">\
@@ -144,8 +153,12 @@ function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
 
 /** 
  * Callback used when a folder drop down has changed.
+ * @param {boolean} keepModelIndex - Specifies if the model index should be kept, or reset to zero
 */
-function onFolderDropDownChanged() {
+function onFolderDropDownChanged(keepModelIndex) {
+    if (!keepModelIndex) {
+        _params.model = 0;
+    }
     let folderDropDown = document.getElementById("folderDropDownMenu");
     let models = _manifestData[folderDropDown.value].models;
     generateDropdownMenu("modelDropDown", "modelDropDownMenu", models, "fileName", onModelDropDownChange);
@@ -164,7 +177,7 @@ function onFolderDropDownChanged() {
  * @param {function()} onChange - callback to use when a drop down menu item has changed.
  */
 function generateDropdownMenu(targetID, dropDownID, data, property, onChange) {
-    let innerHTML = '<select id="' + dropDownID + '"';
+    let innerHTML = '<select class="form-control" id="' + dropDownID + '"';
     if (onChange) {
         innerHTML += 'onchange="' + onChange.name + '()">';
     }
@@ -172,7 +185,6 @@ function generateDropdownMenu(targetID, dropDownID, data, property, onChange) {
         innerHTML += '>';
     }
 
-    innerHTML += '<option value="#">--------</option>';
     for (let i = 0; i < data.length; ++i) {
         innerHTML += '<option value="' + i + '">' + data[i][property] + '</option>';
     }
@@ -190,10 +202,13 @@ function populateFolderDropdown(manifestData) {
 
     generateDropdownMenu("folderDropDown", "folderDropDownMenu", _manifestData, 'folder', onFolderDropDownChanged);
 
-    if (_params.folder != null) {
-        document.getElementById('folderDropDownMenu').value = _params.folder;
-        onFolderDropDownChanged();
+    if (_params.folder == null) {
+        _params.folder = 0;
+        _params.model = 0;
     }
+
+    document.getElementById('folderDropDownMenu').value = _params.folder;
+    onFolderDropDownChanged(true);
 }
 
 /** 
@@ -215,6 +230,12 @@ function loadParams() {
         _manifestURL = _params.manifest;
         getJSON(_params.manifest, populateFolderDropdown);
     }
+    else {
+        const innerHTML = '<div class="alert alert-danger" role="alert">\
+        The manifest url was not found! Here is a reference: <a href="' + referenceURL + '" class="alert-link">' + referenceURL + '</a>.\
+      </div>';
+        document.getElementById('assets-viewer-content').innerHTML = innerHTML;
+    }
 }
 
 /**
@@ -225,20 +246,31 @@ function loadParams() {
  */
 function getJSON(jsonURL, onSuccess, onError) {
     let xmlhttp = new XMLHttpRequest();
-
-    xmlhttp.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            let manifestFile = JSON.parse(this.responseText);
-            onSuccess(manifestFile);
+    if (jsonURL.endsWith('.json')) {
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let manifestFile = JSON.parse(this.responseText);
+                onSuccess(manifestFile);
+            }
+        };
+        xmlhttp.onerror = function () {
+            manifestError();
+        };
+        xmlhttp.ontimeout = function (err) {
+            onError("getJSON timed out");
         }
-    };
-    xmlhttp.ontimeout = function (err) {
-        onError("getJSON timed out");
+        xmlhttp.onloadend = function () {
+            if (xmlhttp.status === 404) {
+                manifestError();
+            }
+        }
+        xmlhttp.open('GET', jsonURL, true);
+        xmlhttp.timeout = 5000;
+        xmlhttp.send();
     }
-    xmlhttp.open('GET', jsonURL, true);
-    xmlhttp.timeout = 5000;
-    xmlhttp.send();
+    else {
+        manifestError();
+    }
 }
-
 
 initializeEngines();
