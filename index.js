@@ -93,6 +93,7 @@ function populateEngines(engines) {
                 <div id=';
         engineHTML += cardID + ' class="embed-responsive embed-responsive-1by1">\
                 </div>\
+                <p class="card-text" id="' + cardID + '_url">' + cardID + '</p>\
             </div>\
         </div>\
         ';
@@ -145,6 +146,11 @@ function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
         let url = evalTemplateUrl(assetURL, cameraPosition);
         const iframeDiv = document.getElementById(cardID);
         iframeDiv.innerHTML = '<iframe class="embed-responsive-item" src=' + url + '></iframe>';
+
+        //Set the card text to a link to the url
+        const cardText = document.getElementById(cardID + '_url');
+        const cardTextInnerHTML = '<a href="' + url + '">' + url + '</a>';
+        cardText.innerHTML = cardTextInnerHTML;
     }
     _params.model = modelIndex;
     _params.folder = folderIndex;
