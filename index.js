@@ -61,7 +61,7 @@ function manifestError() {
         The manifest url was not found! Here is a reference: <a href="' + referenceURL + '" class="alert-link">' + referenceURL + '</a>.\
       </div>';
 
-    document.getElementById('assets-viewer-content').innerHTML = innerHTML;
+    document.getElementById('assets-viewer-error-field').innerHTML = innerHTML;
 }
 
 /**
