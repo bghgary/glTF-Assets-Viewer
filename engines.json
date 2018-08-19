@@ -2,6 +2,9 @@
     "BabylonJS": {
         "templateUrl": "https://sandbox.babylonjs.com/index.html?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${cameraPosition.z}&kiosk=true"
     },
+    "PlayCanvas": {
+        "templateUrl": "https://playcanvas.github.io/playcanvas-gltf/viewer/index.html?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${cameraPosition.z}"
+    },
     "ThreeJS": {
         "templateUrl": "https://gltf-viewer.donmccurdy.com/#model=${assetUrl}&cameraPosition=${cameraPosition.x},${cameraPosition.y},${cameraPosition.z}&kiosk=true&preset=assetgenerator"
     }
