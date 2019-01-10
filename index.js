@@ -111,7 +111,7 @@ function updateLink() {
         link += 'manifest=' + _params.manifest;
     }
     if (_params.folder) {
-        link += '&folder=' + _params.folder;
+        link += '&folder=' + _manifestData[_params.folder].folder;
     }
     if (_params.model) {
         link += '&model=' + _params.model;
@@ -120,6 +120,19 @@ function updateLink() {
     window.history.replaceState(null, document.title, link);
 }
 
+/**
+ * Gets the index of the asset folder
+ * @param {string} folderName The name of the asset folder
+ * @returns number or null if the folder name could not be found
+ */
+function getFolderIndexFromName(folderName) {
+    for (let i = 0; i < Object.keys(_manifestData).length; ++i) {
+        if (_manifestData[i].folder == folderName) {
+            return i;
+        }
+    }
+    return null;
+}
 function onModelDropDownChange() {
     let folderIndex = folderDropDown = document.getElementById("folderDropDownMenu").value;
     let folderName = _manifestData[folderIndex].folder;
@@ -201,7 +214,11 @@ function populateFolderDropdown(manifestData) {
     _manifestData = manifestData;
 
     generateDropdownMenu("folderDropDown", "folderDropDownMenu", _manifestData, 'folder', onFolderDropDownChanged);
-
+    if (!_params.folder.match(/^-{0,1}\d+$/))
+    {
+        _params.folder = getFolderIndexFromName(_params.folder); 
+    }
+    
     if (_params.folder == null) {
         _params.folder = 0;
         _params.model = 0;
