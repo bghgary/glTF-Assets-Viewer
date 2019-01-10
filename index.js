@@ -121,7 +121,9 @@ function updateLink() {
 }
 
 /**
- * Gets the index of the asset folder
+ * Gets the index of the asset folder from the manifest file.  
+ * If an id attribute is not in the manifest, assumes
+ * the original folder id is the folder index.
  * @param {string} folderName The name of the asset folder
  * @returns the folder id
  */
