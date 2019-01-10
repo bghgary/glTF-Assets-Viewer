@@ -41,7 +41,7 @@ function parseParameters() {
                     break;
                 }
                 case "folder": {
-                    result.folder = parameter[1];
+                    result.folderId = parameter[1];
                     break;
                 }
                 case "model": {
@@ -110,8 +110,8 @@ function updateLink() {
     if (_params.manifest) {
         link += 'manifest=' + _params.manifest;
     }
-    if (_params.folder) {
-        link += '&folder=' + _params.folder;
+    if (_params.folderIndex) {
+        link += '&folder=' + _params.folderIndex;
     }
     if (_params.model) {
         link += '&model=' + _params.model;
@@ -120,6 +120,21 @@ function updateLink() {
     window.history.replaceState(null, document.title, link);
 }
 
+/**
+ * Gets the index of the asset folder from the manifest file.  
+ * If an id attribute is not in the manifest, assumes
+ * the original folder id is the folder index.
+ * @param {string} folderName The name of the asset folder
+ * @returns the folder id
+ */
+function getFolderIndexFromFolderId(folderId) {
+    for (let i = 0; i < Object.keys(_manifestData).length; ++i) {
+        if (_manifestData[i].id != null && _manifestData[i].id == folderId) {
+            return i;
+        }
+    }
+    return folderId;
+}
 function onModelDropDownChange() {
     let folderIndex = folderDropDown = document.getElementById("folderDropDownMenu").value;
     let folderName = _manifestData[folderIndex].folder;
@@ -147,7 +162,7 @@ function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
         iframeDiv.innerHTML = '<iframe class="embed-responsive-item" src=' + url + '></iframe>';
     }
     _params.model = modelIndex;
-    _params.folder = folderIndex;
+    _params.folderIndex = folderIndex;
     updateLink();
 }
 
@@ -202,12 +217,15 @@ function populateFolderDropdown(manifestData) {
 
     generateDropdownMenu("folderDropDown", "folderDropDownMenu", _manifestData, 'folder', onFolderDropDownChanged);
 
-    if (_params.folder == null) {
-        _params.folder = 0;
+    _params.folderIndex = getFolderIndexFromFolderId(_params.folderId); 
+    
+    
+    if (_params.folderIndex == null) {
+        _params.folderIndex = 0;
         _params.model = 0;
     }
 
-    document.getElementById('folderDropDownMenu').value = _params.folder;
+    document.getElementById('folderDropDownMenu').value = _params.folderIndex;
     onFolderDropDownChanged(true);
 }
 
