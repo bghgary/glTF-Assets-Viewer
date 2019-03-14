@@ -35,6 +35,10 @@ function parseParameters() {
         for (let i = 0; i < parameters.length; i++) {
             let parameter = parameters[i].split("=");
             switch (parameter[0]) {
+                case "type": {
+                    result.type = parameter[1];
+                    break;
+                }
                 case "manifest": {
                     result.manifest = parameter[1];
                     _rootdir = result.manifest.substr(0, result.manifest.lastIndexOf('/'));
@@ -236,7 +240,7 @@ function loadParams() {
     _params = parseParameters();
 
     if (!_params.manifest && document.referrer) {
-        let manifestURL = document.referrer.split('Output')[0] + 'Output/';
+        let manifestURL = document.referrer.split('Output')[0] + (_params.type ? `Output/${_params.type}/` : 'Output/');
         manifestURL = manifestURL.replace('/github.com/', '/raw.githubusercontent.com/').replace('/tree/', '/').replace('/blob/', '/');
         _rootdir = manifestURL;
         manifestURL += 'Manifest.json';
