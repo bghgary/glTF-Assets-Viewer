@@ -84,7 +84,6 @@ function populateEngines(engines) {
     let index = 0;
     for (let engine in _engineData) {
         let engineName = engine;
-        let engineURL = _engineData[engine].url;
         const cardID = 'card_' + index++;
 
         _engineData[engine].cardID = cardID;
@@ -92,12 +91,9 @@ function populateEngines(engines) {
         let engineHTML = '\
         <div class="card">\
             <div class="card-body">\
-                <h5 class="card-title">';
-        engineHTML += engineName + '</h5>\
-                <div id=';
-        engineHTML += cardID + ' class="embed-responsive embed-responsive-1by1">\
+                <a id="' + cardID + '_link"><h5 class="card-title">' + engineName + '</h5></a>\
+                <div id="' + cardID + '" class="embed-responsive embed-responsive-1by1">\
                 </div>\
-                <p class="card-text" id="' + cardID + '_url">' + cardID + '</p>\
             </div>\
         </div>\
         ';
@@ -142,9 +138,7 @@ function getFolderIndexFromFolderId(folderId) {
 }
 function onModelDropDownChange() {
     let folderIndex = folderDropDown = document.getElementById("folderDropDownMenu").value;
-    let folderName = _manifestData[folderIndex].folder;
     let modelIndex = document.getElementById("modelDropDownMenu").value;
-    let model = _manifestData[folderIndex].models[modelIndex].fileName;
     updateEngineURLParameters(_rootdir, folderIndex, modelIndex);
 }
 
@@ -166,10 +160,9 @@ function updateEngineURLParameters(modelURL, folderIndex, modelIndex) {
         const iframeDiv = document.getElementById(cardID);
         iframeDiv.innerHTML = '<iframe class="embed-responsive-item" src=' + url + '></iframe>';
 
-        //Set the card text to a link to the url
-        const cardText = document.getElementById(cardID + '_url');
-        const cardTextInnerHTML = '<a href="' + url + '">' + url + '</a>';
-        cardText.innerHTML = cardTextInnerHTML;
+        // Set the card text to a link to the url
+        const cardText = document.getElementById(cardID + '_link');
+        cardText.href = url;
     }
     _params.model = modelIndex;
     _params.folderIndex = folderIndex;
