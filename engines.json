@@ -3,7 +3,7 @@
         "templateUrl": "https://sandbox.babylonjs.com/index.html?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${cameraPosition.z}&kiosk=true"
     },
     "PlayCanvas": {
-        "templateUrl": "https://playcanvas.com/viewer/?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${cameraPosition.z}"
+        "templateUrl": "https://playcanvas.com/viewer/index.html?assetUrl=${assetUrl}&cameraPosition=${-cameraPosition.x},${cameraPosition.y},${cameraPosition.z}"
     },
     "ThreeJS": {
         "templateUrl": "https://gltf-viewer.donmccurdy.com/#model=${assetUrl}&cameraPosition=${cameraPosition.x},${cameraPosition.y},${cameraPosition.z}&kiosk=true&preset=assetgenerator"
